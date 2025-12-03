@@ -11,10 +11,18 @@ The core scripts, refined codebase, and final outputs will be uploaded shortly.
 **Single-Camera Multi-Person Localization & Tracking - Key Contributions**
 
 *   **Frame-wise Affinity Matrix** Construction between incoming detections and existing trajectories.
+  
+This is a zero and one matrix, in which the rows represent the goals in the previous time step (existed trajectories in the current frame) and the columns show detections in the current frame. In an ideal circumstance, for each column there is one and only one column with a nonzero magnitude in rows. However, in real situation, some special states are possible to happen. Some of them are presented in Fig. 10. Over the time, not only states change but also the number of pedestrians presented in the current scene changes. So, at first the matrix dimension is proportional to the number of trajectories and detected goals. Then, in the following steps, it will be completed.
 
 *   **Scene-aware Detection Evaluation** using a novel scale calibration factor.
 
+The image sequences or video frames are in two-dimensional environments; while, the real-world coordinate is in three. As a result of the perspective features and image depth, the scale in front of the scene doesn’t equal it at the end of the image. Considering the observed false positive or negative of detectors, it is clear that some wrongs happened aren’t logically acceptable; for instance, a pedestrian on the sky or a very big or small detection compared to the dimensions of the image. To make the dimensions at all points of the scene analogous, we introduced a scale factor in this study. This factor can be calculated for each dataset experimentally or using our data prior knowledge (or even can be obtained during a separate learning algorithm). On the other hand, there is an additional challenge in datasets on moving platforms. In these conditions, for a steady enough camera movement (given a determined confidence coefficient) we will define the scale factor in a similar way.
+
+  
+
 *   **Hierarchical Data Association Pipeline** combining coarse-to-fine matching.
+
+  It's already described in the summery of my thesis in its PDF file ....
 
 *   **Graph-based Clustering via Connected Components** for association refinement.
 
