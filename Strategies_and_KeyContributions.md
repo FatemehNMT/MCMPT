@@ -8,28 +8,38 @@ Below, I have listed the main novelties and methodological contributions of this
 The core scripts, refined codebase, and final outputs will be uploaded shortly.
 
 
-**Single-Camera Multi-Person Localization & Tracking - Key Contributions**
+**Single-Camera Multi-Person Localization & Tracking - Key Strategies and Contributions**
 
 *   **Frame-wise Affinity Matrix** Construction between incoming detections and existing trajectories.
   
-This is a zero and one matrix, in which the rows represent the goals in the previous time step (existed trajectories in the current frame) and the columns show detections in the current frame. In an ideal circumstance, for each column there is one and only one column with a nonzero magnitude in rows. However, in real situation, some special states are possible to happen. Some of them are presented in Fig. 10. Over the time, not only states change but also the number of pedestrians presented in the current scene changes. So, at first the matrix dimension is proportional to the number of trajectories and detected goals. Then, in the following steps, it will be completed.
+Following each detection stage, an affinity matrix is constructed between existing trajectories (rows) and current detections (columns). Each trajectory has a predicted region of possible appearance; if a detection falls inside such a region, the corresponding entry becomes 1, otherwise 0.
+Ideally, each column contains exactly one non-zero row; however, real-world tracking yields several ambiguous scenarios:
+
+1. Zero row → lost trajectory / FN
+2. Zero column → new entry or FP
+3. Multiple matches → ambiguity resolved using appearance similarity and distance metrics
+4. Unequal row/column counts → matrix augmentation required
+
+*   **Applying Deep re-identification**
 
 *   **Scene-aware Detection Evaluation** using a novel scale calibration factor.
 
-The image sequences or video frames are in two-dimensional environments; while, the real-world coordinate is in three. As a result of the perspective features and image depth, the scale in front of the scene doesn’t equal it at the end of the image. Considering the observed false positive or negative of detectors, it is clear that some wrongs happened aren’t logically acceptable; for instance, a pedestrian on the sky or a very big or small detection compared to the dimensions of the image. To make the dimensions at all points of the scene analogous, we introduced a scale factor in this study. This factor can be calculated for each dataset experimentally or using our data prior knowledge (or even can be obtained during a separate learning algorithm). On the other hand, there is an additional challenge in datasets on moving platforms. In these conditions, for a steady enough camera movement (given a determined confidence coefficient) we will define the scale factor in a similar way.
-
-  
+False positives frequently occur in regions outside feasible human-presence areas or with implausible scales. We exploit camera geometry and scene depth to eliminate such detections.
+A scale factor is derived from scene perspective, converting bounding-box heights into metric proxies for pedestrian height. It is used to:
+1. reject detections with implausible bounding-box sizes,
+2. restrict predicted areas for next-frame appearance.
+Scale factors vary across datasets and can be estimated experimentally or learned via supervised analysis.
 
 *   **Hierarchical Data Association Pipeline** combining coarse-to-fine matching.
 
-  It's already described in the summery of my thesis in its PDF file ....
+  A novel strategy based on an affinity matrix that links current detections to predicted target states, combining other elements such as our short-term memory, similarities and the scene information.
 
 *   **Graph-based Clustering via Connected Components** for association refinement.
 
-  In this work, the affinity matrix is analyzed using graph-based methods. Each element with value **1** is considered as a node in a graph. An edge is created between two nodes if they share the same row or the same column. This construction naturally transforms the problem into finding **connected components** of the graph. Each connected component corresponds to a cluster of positions in the matrix that are related through rows and/or columns. This approach allows us to go beyond simple row-wise or column-wise matches and instead capture larger groups of interdependent elements in a unified, systematic way.
+In this work, the affinity matrix is analyzed using graph-based methods. Each element with value **1** is considered as a node in a graph. An edge is created between two nodes if they share the same row or the same column. This construction naturally transforms the problem into finding **connected components** of the graph. Each connected component corresponds to a cluster of positions in the matrix that are related through rows and/or columns. This approach allows us to go beyond simple row-wise or column-wise matches and instead capture larger groups of interdependent elements in a unified, systematic way.
 In short, the use of graph theory (connected components) provides a clear and elegant solution for grouping and analyzing the structure of the affinity matrix.
 
-*   **Unified Entry-Exit Modeling** for robust handling of targets appearing or disappearing.
+*   **Entry-Exit Modeling** for robust handling of targets appearing or disappearing.
 
 The primary contribution of this work lies in the **automatic discovery of entry and exit regions** in multi-object tracking (MOT) scenarios. Unlike existing approaches that either ignore entry/exit modeling or rely on manually annotated regions of interest, our method introduces a **data-driven and adaptive framework** with the following innovations:
 
@@ -43,23 +53,13 @@ The primary contribution of this work lies in the **automatic discovery of entry
 
 5. **Visualization and Interpretability.** Discovered regions are visualized both through convex hulls of endpoint clusters and heatmaps of spatial density. This dual visualization provides clear interpretability for both qualitative analysis and system debugging.
 
-**Impact.** This framework enhances MOT by improving the handling of trajectories at scene boundaries, reducing identity switches and track fragmentation. More importantly, the proposed method lays the groundwork for **multi-camera MOT**, where accurate modeling of entry/exit zones is crucial for cross-camera handover. By providing an unsupervised yet adaptive mechanism for entry/exit discovery, this work contributes a novel perspective to MOT literature.
+**Impact.** While entry and exit region extraction has proven useful in single-camera multi-object tracking scenarios—helping to identify when targets appear or leave the scene—our experiments on the WILDTRACK dataset show that, for multi-camera setups with nearly simultaneous camera views, these regions are widely distributed across all edges of each camera view. Consequently, their direct utility for decision-making in multi-camera data association is limited. Each camera captures targets from different angles at the same time, and the projection of these points onto a common ground plane dilutes the spatial significance of any single entry/exit region. Therefore, trajectory-based methods and motion modeling across cameras remain more reliable for predicting target appearance and disappearance in multi-camera tracking. Highlighting this limitation provides insight into the challenges of extending single-camera heuristics to multi-camera systems.
 
-In single-camera multi-object tracking, entry and exit region extraction has proven useful to detect when targets appear or leave the scene. Extending this approach to multi-camera setups, we applied the same methodology independently to each camera in the WILDTRACK dataset. However, due to the nearly simultaneous coverage of all cameras, entry and exit points are widely distributed along all image edges in each view. Consequently, individual camera-based regions lose discriminative power when used for multi-camera data association. While the method effectively identifies local clusters and margins for single-camera scenarios, the overlap across views and projection onto a common ground plane reduces their direct utility for predicting target appearance or disappearance. Nonetheless, this analysis provides valuable insights into camera coverage patterns and informs the design of trajectory-based data association strategies in multi-camera tracking systems.
-
-While entry and exit region extraction has proven useful in single-camera multi-object tracking scenarios—helping to identify when targets appear or leave the scene—our experiments on the WILDTRACK dataset show that, for multi-camera setups with nearly simultaneous camera views, these regions are widely distributed across all edges of each camera view. Consequently, their direct utility for decision-making in multi-camera data association is limited. Each camera captures targets from different angles at the same time, and the projection of these points onto a common ground plane dilutes the spatial significance of any single entry/exit region. Therefore, trajectory-based methods and motion modeling across cameras remain more reliable for predicting target appearance and disappearance in multi-camera tracking. Highlighting this limitation provides insight into the challenges of extending single-camera heuristics to multi-camera systems.
-
-**Multi-Camera Multi-Person Localization & Tracking - Key Contributions**
+**Multi-Camera Multi-Person Localization & Tracking - Key Strategies and Contributions**
 
 *   **Projection-Based Cross-Camera Consistency** on the shared ground plane.
 
-*   **Synchronized Multi-Camera Warping** for geometric agreement checking.
-
-*   **Cross-View Geometric Gating** to remove implausible match candidates.
-
 *   **Two-Path Threshold Updating Strategy** for adaptive T_temp and T_geom.
-
-*   **Hybrid Update Mechanism combining** temporal & geometric constraints.
 
 *   **Camera-Aware Spatial DBSCAN** for clustering detections on ground plane.
 
@@ -78,8 +78,6 @@ While entry and exit region extraction has proven useful in single-camera multi-
 *   **Inter-Camera Consistency Verification** for identity stability.
 
 *   **Independent Kalman Filters per Camera and Ground Plane**, supporting fusion.
-
-*   **Optional Multi-Camera Appearance Fusion** (feature-based refinement).
 
 *   **Temporal Smoothing Across Cameras** for cross-view trajectory stability.
 
