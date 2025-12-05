@@ -8,9 +8,11 @@ Below, I have listed the main novelties and methodological contributions of this
 The core scripts, refined codebase, and final outputs will be uploaded shortly.
 
 
-**Single-Camera Multi-Person Localization & Tracking - Key Contributions**
+**Single-Camera Multi-Person Localization & Tracking - Key Strategies and Contributions**
 
 *   **Frame-wise Affinity Matrix** Construction between incoming detections and existing trajectories.
+
+*   **Applying Deep re-identification**
 
 *   **Scene-aware Detection Evaluation** using a novel scale calibration factor.
 
@@ -20,17 +22,11 @@ The core scripts, refined codebase, and final outputs will be uploaded shortly.
 
 *   **Unified Entry-Exit Modeling** for robust handling of targets appearing or disappearing.
 
-**Multi-Camera Multi-Person Localization & Tracking - Key Contributions**
+**Multi-Camera Multi-Person Localization & Tracking - Key Strategies and Contributions**
 
 *   **Projection-Based Cross-Camera Consistency** on the shared ground plane.
 
-*   **Synchronized Multi-Camera Warping** for geometric agreement checking.
-
-*   **Cross-View Geometric Gating** to remove implausible match candidates.
-
 *   **Two-Path Threshold Updating Strategy** for adaptive T_temp and T_geom.
-
-*   **Hybrid Update Mechanism combining** temporal & geometric constraints.
 
 *   **Camera-Aware Spatial DBSCAN** for clustering detections on ground plane.
 
@@ -49,8 +45,6 @@ The core scripts, refined codebase, and final outputs will be uploaded shortly.
 *   **Inter-Camera Consistency Verification** for identity stability.
 
 *   **Independent Kalman Filters per Camera and Ground Plane**, supporting fusion.
-
-*   **Optional Multi-Camera Appearance Fusion** (feature-based refinement).
 
 *   **Temporal Smoothing Across Cameras** for cross-view trajectory stability.
 
