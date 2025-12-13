@@ -57,21 +57,49 @@ The primary contribution of this work lies in the **automatic discovery of entry
 
 **Multi-Camera Multi-Person Localization & Tracking - Key Strategies and Contributions**
 
+*   **Multi-Camera Synchronized Projection** Comparison of frames projected onto the Earth at the same time.
+
 *   **Projection-Based Cross-Camera Consistency** on the shared ground plane.
 
-*   **Two-Path Threshold Updating Strategy** for adaptive T_temp and T_geom.
+  1. Applying the position on the ground, instead of pixels, to compare detection boxes.
+  
+  2. Two-Path Threshold Updating Strategy for adaptive T_temp and T_geom.
+  
+  3. T_temp (Temporal Geometric Update)
+  
+  4. T_geom (Pure Geometric Threshold)
 
-*   **Camera-Aware Spatial DBSCAN** for clustering detections on ground plane.
+  5. Estimate these two terms independently and aggregate the results.
 
-*   **Global Fusion Graph Construction** linking detections across all cameras.
+*   **Hybrid Update Mechanism** Selecting ID by combining temporal and geometric information and Building a score by weighting between the two.
+     
+*   **Camera-Aware Spatial DBSCAN** for clustering detections on ground plane (not Pixels).
+
+    Running DBSCAN with thresholds dependent on camera distance (i.e. the ground distance is not the same for the near and far cameras).
+
+    Used for: Removing FPs, Getting clean components, Threshold tuning and Visual analysis.
 
 *   **Component-Based Visualization & Box Coloring** for interpretability.
 
+    Show color-coded boxes by component
+  
+    Helps analyze thresholds and DBSCAN behavior
+
 *   **Retention of Small Clusters/Subclusters** to avoid over-filtering.
+
+    More focus on Subclusters and their analyze to avoid getting real people lost in the crowd, considering inter-cluster distances.
+
+*   **Global Fusion Graph Construction** linking detections across all cameras.
 
 *   **Removal of YOLO-Only Artifact Regions** (non-existent objects).
 
+    Remove detections that are not in the main pipeline
+
+    Prevent FP from propagating to the tracking chain
+
 *   **Global ID Initialization from First Frame** based on multi-camera agreement.
+
+    Work on global ground and then compare all cameras and Appearances, and finally extra unassigned ones.
 
 *   **Structured Storage of Ground/Camera Features** for scalable processing.
 
@@ -80,7 +108,11 @@ The primary contribution of this work lies in the **automatic discovery of entry
 *   **Independent Kalman Filters per Camera and Ground Plane**, supporting fusion.
 
 *   **Temporal Smoothing Across Cameras** for cross-view trajectory stability.
+ 
+    Use short-term cross-camera history to prevent ID switches when a person leaves one camera's view and enters another.
 
-*   **Unified Spatio-Temporal-Appearance Scoring Function.**
+*   **Unified Spatio-Temporal-Appearance Scoring Function** for updates and best match selection.
+
+    Design a complete Scoring Function including: geometry, temporal continuity, appearance embedding or color feature (later)
 
 *   **General Multi-Camera Data Association Framework** for each new frame.
