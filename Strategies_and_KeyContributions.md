@@ -57,19 +57,29 @@ The primary contribution of this work lies in the **automatic discovery of entry
 
 **Multi-Camera Multi-Person Localization & Tracking - Key Strategies and Contributions**
 
+*   **Projection-Based Cross-Camera Consistency** on the shared ground plane (Applying the position on the ground, instead of pixels, to compare detection boxes.).
+
+To enable cross-camera spatial consistency, we established a unified ground-plane coordinate system.
+Using each camera’s extrinsic calibration matrix, 2D image coordinates were back-projected to 3D rays, which were then intersected with the estimated ground plane.
+This produced per-camera ground projections in the global metric space.
+The mean ground position across all cameras was computed to define a shared spatial reference, and the per-camera deviations were analyzed to evaluate geometric consistency.
+The resulting ground-plane alignment allowed direct geometric association of objects across cameras.
+
+*   **Adaptive Homography Refinement for Ground Stability**
+  
+Although the homography matrices are initially computed from camera calibration parameters, minor temporal drift and misalignment can still emerge during long-term operation due to imperfect detections, synchronization offsets, or local depth inconsistencies.
+To mitigate these effects, we implement a dynamic self-calibration mechanism that continuously monitors the mean reprojection error across frames. When systematic drift is detected, recent multi-view correspondences are aggregated to re-estimate refined homographies using a robust least-squares approach.
+The refined transformations are fused with the existing ones via an exponential moving average, ensuring smooth temporal adaptation without abrupt geometric changes. This adaptive refinement maintains a stable and coherent ground-plane alignment, thereby improving temporal and geometric consistency across cameras.
+
 *   **Multi-Camera Synchronized Projection** Comparison of frames projected onto the Earth at the same time.
 
-*   **Projection-Based Cross-Camera Consistency** on the shared ground plane.
+*   **Two-Path Updating Strategy** on the shared ground plane for adaptive T_temp and T_geom.
+  
+  T_temp (Temporal Geometric Update)
+  
+  T_geom (Pure Geometric Threshold)
 
-  1. Applying the position on the ground, instead of pixels, to compare detection boxes.
-  
-  2. Two-Path Threshold Updating Strategy for adaptive T_temp and T_geom.
-  
-  3. T_temp (Temporal Geometric Update)
-  
-  4. T_geom (Pure Geometric Threshold)
-
-  5. Estimate these two terms independently and aggregate the results.
+  Estimate these two terms independently and aggregate the results.
 
 *   **Hybrid Update Mechanism** Selecting ID by combining temporal and geometric information and Building a score by weighting between the two.
      
@@ -78,6 +88,8 @@ The primary contribution of this work lies in the **automatic discovery of entry
     Running DBSCAN with thresholds dependent on camera distance (i.e. the ground distance is not the same for the near and far cameras).
 
     Used for: Removing FPs, Getting clean components, Threshold tuning and Visual analysis.
+
+    In other words, we propose a geometry-aware adaptive distance threshold for cross-camera detection association. Instead of using a single fixed tolerance for all camera pairs, our method computes a per-pair geometric threshold from camera layout (distance between image centers projected to the common ground plane) and refines it with empirical statistics collected from annotated cross-view matches. The final threshold for a camera pair ( 𝐴 , 𝐵 ) (A,B) is given by the maximum of a geometry-driven baseline and an empirical percentile (e.g., 90th) of observed inter-camera projection errors. This hybrid strategy (1) accounts for camera topology and (2) absorbs real-world projection noise, improving robustness of cross-camera association in crowded and calibrated scenes.
 
 *   **Component-Based Visualization & Box Coloring** for interpretability.
 
@@ -89,6 +101,17 @@ The primary contribution of this work lies in the **automatic discovery of entry
 
     More focus on Subclusters and their analyze to avoid getting real people lost in the crowd, considering inter-cluster distances.
 
+*   **Camera Selection in workin with WILDTRACK-Seven-Camera-HD-Dataset**
+    Camera Selection Principles and Criteria (What is Important and Why):
+    1. Ground Coverage
+    2. Overlap
+    3. Baseline / Viewpoint Diversity
+    4. Calibration Quality & Reprojection Error
+    5. Effect of Occlusion and Crowding
+    6. Temporal Distribution / Δt and Connectivity
+    7. Image Clarity / FPS / Lighting
+    8. Height and Distance Diversity
+  
 *   **Global Fusion Graph Construction** linking detections across all cameras.
 
 *   **Removal of YOLO-Only Artifact Regions** (non-existent objects).
@@ -110,6 +133,7 @@ The primary contribution of this work lies in the **automatic discovery of entry
 *   **Temporal Smoothing Across Cameras** for cross-view trajectory stability.
  
     Use short-term cross-camera history to prevent ID switches when a person leaves one camera's view and enters another.
+    For this dataset, Δt_appear is useful; Since people are often seen in multiple cameras at the same time, appearance-to-appearance helps with matching speed and accuracy.
 
 *   **Unified Spatio-Temporal-Appearance Scoring Function** for updates and best match selection.
 
