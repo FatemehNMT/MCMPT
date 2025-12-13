@@ -1,14 +1,15 @@
+# **Strategies and KeyContributions**
+
 **Following my previous dissertation — Multi-Person Localization and Tracking Using Dynamic Bayesian Networks and Hierarchical Data Association — which was primarily based on statistical modeling and MATLAB implementations, I decided to extend my research direction toward deep-learning-based and more creative approaches using Python.**
 
 **Building upon the novelties introduced in my earlier work, I have now expanded the framework to both Single-Camera and Multi-Camera Multi-Person Tracking scenarios.**
 This includes rethinking the data association pipeline, improving robustness under occlusion, and introducing new ideas that generalize across camera views.
 
 **Numerical results and video demonstrations are currently being generated and will be added soon.**
-Below, I have listed the main novelties and methodological contributions of this line of research.
-The core scripts, refined codebase, and final outputs will be uploaded shortly.
+This document summarizes the conceptual contributions and design choices of an ongoing research project.
 
 
-**Single-Camera Multi-Person Localization & Tracking - Key Strategies and Contributions**
+## **Single-Camera Multi-Person Localization & Tracking - Key Strategies and Contributions**
 
 *   **Frame-wise Affinity Matrix** Construction between incoming detections and existing trajectories.
   
@@ -55,7 +56,7 @@ The primary contribution of this work lies in the **automatic discovery of entry
 
 **Impact.** While entry and exit region extraction has proven useful in single-camera multi-object tracking scenarios—helping to identify when targets appear or leave the scene—our experiments on the WILDTRACK dataset show that, for multi-camera setups with nearly simultaneous camera views, these regions are widely distributed across all edges of each camera view. Consequently, their direct utility for decision-making in multi-camera data association is limited. Each camera captures targets from different angles at the same time, and the projection of these points onto a common ground plane dilutes the spatial significance of any single entry/exit region. Therefore, trajectory-based methods and motion modeling across cameras remain more reliable for predicting target appearance and disappearance in multi-camera tracking. Highlighting this limitation provides insight into the challenges of extending single-camera heuristics to multi-camera systems.
 
-**Multi-Camera Multi-Person Localization & Tracking - Key Strategies and Contributions**
+## **Multi-Camera Multi-Person Localization & Tracking - Key Strategies and Contributions**
 
 *   **Projection-Based Cross-Camera Consistency** on the shared ground plane (Applying the position on the ground, instead of pixels, to compare detection boxes.).
 
